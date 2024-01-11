@@ -9,7 +9,7 @@ use beryllium::{
     init::InitFlags,
     video::{CreateWinArgs, GlContextFlags, GlProfile, GlWindow},
 };
-use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glShaderSource, glVertexAttribPointer, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glShaderSource, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -120,6 +120,37 @@ fn create_vertex_shader() {
             );
             v.set_len(log_len.try_into().unwrap());
             panic!("Vertex Compile Error: {}", String::from_utf8_lossy(&v));
+        }
+    }
+}
+
+fn create_fragment_shader() {
+    unsafe {
+        let fragment_shader_script =
+            &*fs::read_to_string("shaders/vert_shader.glsl")
+                .expect("Missing shader!");
+        let fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        assert_ne!(fragment_shader, 0);
+        glShaderSource(
+            fragment_shader,
+            1,
+            &(fragment_shader_script.as_bytes().as_ptr().cast()),
+            &(fragment_shader_script.len().try_into().unwrap()),
+        );
+        glCompileShader(fragment_shader);
+        let mut success = 0;
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &mut success);
+        if success == 0 {
+            let mut v: Vec<u8> = Vec::with_capacity(1024);
+            let mut log_len = 0_i32;
+            glGetShaderInfoLog(
+                fragment_shader,
+                1024,
+                &mut log_len,
+                v.as_mut_ptr().cast(),
+            );
+            v.set_len(log_len.try_into().unwrap());
+            panic!("Fragment Compile Error: {}", String::from_utf8_lossy(&v));
         }
     }
 }
