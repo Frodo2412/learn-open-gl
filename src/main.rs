@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::mem::size_of_val;
 use beryllium::{
     events::Event,
     init::InitFlags,
@@ -7,9 +8,13 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, glBindBuffer, glClearColor, glGenBuffers, glGenVertexArrays, GLuint, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_STATIC_DRAW, glBindBuffer, glBufferData, glClearColor, glGenBuffers, glGenVertexArrays, GLuint, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
+
+type Vertex = [f32; 3];
+
+const VERTICES: [Vertex; 3] = [[-0.5, -0.5, 0.0], [0.5, -0.5, 0, 0], [0.0, 0.5, 0.0]];
 
 fn setup_gl_context() -> Sdl {
     let sdl = Sdl::init(InitFlags::EVERYTHING);
@@ -64,12 +69,26 @@ fn generate_vertex_buffer_object() {
     }
 }
 
+
+fn send_data() {
+    unsafe {
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            size_of_val(&VERTICES) as isize,
+            VERTICES.as_ptr().cast(),
+            GL_STATIC_DRAW,
+        )
+    }
+}
+
 fn main() {
     let sdl = setup_gl_context();
     let win = create_window(&sdl);
 
     load_open_gl(&win);
-
+    generate_vertex_array_object();
+    generate_vertex_buffer_object();
+    send_data();
 
     'main_loop: loop {
         while let Some((event, _timestamp)) = sdl.poll_events() {
