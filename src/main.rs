@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::mem::size_of_val;
+use std::mem::{size_of, size_of_val};
 use beryllium::{
     events::Event,
     init::InitFlags,
@@ -8,7 +8,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_STATIC_DRAW, glBindBuffer, glBufferData, glClearColor, glGenBuffers, glGenVertexArrays, GLuint, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, glBindBuffer, glBufferData, glClearColor, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, GLuint, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -77,7 +77,16 @@ fn send_data() {
             size_of_val(&VERTICES) as isize,
             VERTICES.as_ptr().cast(),
             GL_STATIC_DRAW,
-        )
+        );
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            size_of::<Vertex>().try_into().unwrap(),
+            0 as *const _,
+        );
+        glEnableVertexAttribArray(0);
     }
 }
 
