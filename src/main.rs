@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::fs;
 use std::mem::{size_of, size_of_val};
 use beryllium::{
     events::Event,
@@ -8,7 +9,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, glBindBuffer, glBufferData, glClearColor, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, GLuint, glVertexAttribPointer, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -90,6 +91,23 @@ fn send_data() {
     }
 }
 
+fn create_vertex_shader() {
+    let vert_shader_script: &str =
+        &*fs::read_to_string("shaders/vert_shader.glsl")
+            .expect("Missing shader!");
+    unsafe {
+        let vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        assert_ne!(vertex_shader, 0);
+        glShaderSource(
+            vertex_shader,
+            1,
+            &(vert_shader_script.as_bytes().as_ptr().cast()),
+            &(vert_shader_script.len().try_into().unwrap()),
+        );
+        glCompileShader(vertex_shader);
+    }
+}
+
 fn main() {
     let sdl = setup_gl_context();
     let win = create_window(&sdl);
@@ -98,6 +116,7 @@ fn main() {
     generate_vertex_array_object();
     generate_vertex_buffer_object();
     send_data();
+    create_vertex_shader();
 
     'main_loop: loop {
         while let Some((event, _timestamp)) = sdl.poll_events() {
