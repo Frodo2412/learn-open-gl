@@ -9,7 +9,7 @@ use beryllium::{
     init::InitFlags,
     video::{CreateWinArgs, GlContextFlags, GlProfile, GlWindow},
 };
-use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glShaderSource, glVertexAttribPointer, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_VERTEX_SHADER, glAttachShader, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateProgram, glCreateShader, glDeleteBuffers, glDeleteShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glLinkProgram, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -92,7 +92,7 @@ fn send_data() {
     }
 }
 
-fn create_vertex_shader() {
+fn create_vertex_shader() -> GLuint {
     let vert_shader_script: &str =
         &*fs::read_to_string("shaders/vert_shader.glsl")
             .expect("Missing shader!");
@@ -121,10 +121,11 @@ fn create_vertex_shader() {
             v.set_len(log_len.try_into().unwrap());
             panic!("Vertex Compile Error: {}", String::from_utf8_lossy(&v));
         }
+        vertex_shader
     }
 }
 
-fn create_fragment_shader() {
+fn create_fragment_shader() -> GLuint {
     unsafe {
         let fragment_shader_script =
             &*fs::read_to_string("shaders/vert_shader.glsl")
@@ -152,6 +153,18 @@ fn create_fragment_shader() {
             v.set_len(log_len.try_into().unwrap());
             panic!("Fragment Compile Error: {}", String::from_utf8_lossy(&v));
         }
+        fragment_shader
+    }
+}
+
+fn attach_shaders(vertex_shader: GLuint, fragment_shader: GLuint) {
+    unsafe {
+        let shader_program = glCreateProgram();
+        glAttachShader(shader_program, vertex_shader);
+        glAttachShader(shader_program, fragment_shader);
+        glLinkProgram(shader_program);
+        glDeleteShader(vertex_shader);
+        glDeleteShader(fragment_shader);
     }
 }
 
@@ -163,7 +176,11 @@ fn main() {
     generate_vertex_array_object();
     generate_vertex_buffer_object();
     send_data();
-    create_vertex_shader();
+
+    let vertex_shader = create_vertex_shader();
+    let fragment_shader = create_fragment_shader();
+
+    attach_shaders(vertex_shader, fragment_shader);
 
     'main_loop: loop {
         while let Some((event, _timestamp)) = sdl.poll_events() {
