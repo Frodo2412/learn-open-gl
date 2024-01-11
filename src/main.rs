@@ -7,7 +7,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::{glClearColor, load_gl_with};
+use ogl33::{glClearColor, glGenVertexArrays, GLuint, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -47,11 +47,20 @@ fn load_open_gl(win: &GlWindow) {
     }
 }
 
+fn create_triangle_data() {
+    unsafe {
+        let mut vao = 0;
+        glGenVertexArrays(1, &mut vao);
+        assert_ne!(vao, 0);
+    }
+}
+
 fn main() {
     let sdl = setup_gl_context();
     let win = create_window(&sdl);
 
     load_open_gl(&win);
+
 
     'main_loop: loop {
         while let Some((event, _timestamp)) = sdl.poll_events() {
