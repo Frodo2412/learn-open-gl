@@ -14,6 +14,22 @@ fn setup_gl_context() -> Sdl {
     sdl
 }
 
+fn create_window(sdl: Sdl) {
+    let win_args = video::CreateWinArgs {
+        title: "LearnOpenGL",
+        width: 800,
+        height: 600,
+        allow_high_dpi: true,
+        borderless: false,
+        resizable: false,
+    };
+
+    let _win = sdl
+        .create_gl_window(win_args)
+        .expect("couldn't make a window and context");
+}
+
 fn main() {
     let sdl = setup_gl_context();
+    create_window(sdl);
 }
