@@ -2,14 +2,14 @@
 
 use std::fs;
 use std::mem::{size_of, size_of_val};
+
 use beryllium::{
+    *,
     events::Event,
     init::InitFlags,
-    video::{CreateWinArgs, GlContextFlags, GlProfile},
-    *,
+    video::{CreateWinArgs, GlContextFlags, GlProfile, GlWindow},
 };
-use beryllium::video::GlWindow;
-use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_STATIC_DRAW, GL_VERTEX_SHADER, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glShaderSource, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -58,6 +58,7 @@ fn generate_vertex_array_object() {
         let mut vao = 0;
         glGenVertexArrays(1, &mut vao);
         assert_ne!(vao, 0);
+        glBindVertexArray(vao);
     }
 }
 
@@ -105,6 +106,21 @@ fn create_vertex_shader() {
             &(vert_shader_script.len().try_into().unwrap()),
         );
         glCompileShader(vertex_shader);
+
+        let mut success = 0;
+        glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &mut success);
+        if success == 0 {
+            let mut v: Vec<u8> = Vec::with_capacity(1024);
+            let mut log_len = 0_i32;
+            glGetShaderInfoLog(
+                vertex_shader,
+                1024,
+                &mut log_len,
+                v.as_mut_ptr().cast(),
+            );
+            v.set_len(log_len.try_into().unwrap());
+            panic!("Vertex Compile Error: {}", String::from_utf8_lossy(&v));
+        }
     }
 }
 
