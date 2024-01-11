@@ -10,7 +10,7 @@ use beryllium::{
     video::{CreateWinArgs, GlContextFlags, GlProfile, GlWindow},
 };
 use beryllium::video::GlSwapInterval;
-use ogl33::{GL_ARRAY_BUFFER, GL_COLOR_BUFFER_BIT, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_VERTEX_SHADER, glAttachShader, glBindBuffer, glBindVertexArray, glBufferData, glClear, glClearColor, glCompileShader, glCreateProgram, glCreateShader, glDeleteShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glLinkProgram, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_COLOR_BUFFER_BIT, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_TRIANGLES, GL_VERTEX_SHADER, glAttachShader, glBindBuffer, glBindVertexArray, glBufferData, glClear, glClearColor, glCompileShader, glCreateProgram, glCreateShader, glDeleteShader, glDrawArrays, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glLinkProgram, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -194,6 +194,8 @@ fn main() {
         }
         unsafe {
             glClear(GL_COLOR_BUFFER_BIT);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
         }
+        win.swap_window();
     }
 }
