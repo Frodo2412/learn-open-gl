@@ -131,7 +131,7 @@ fn create_vertex_shader() -> GLuint {
 fn create_fragment_shader() -> GLuint {
     unsafe {
         let fragment_shader_script =
-            &*fs::read_to_string("shaders/vert_shader.glsl")
+            &*fs::read_to_string("shaders/frag_shader.glsl")
                 .expect("Missing shader!");
         let fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
         assert_ne!(fragment_shader, 0);
