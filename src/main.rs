@@ -9,6 +9,7 @@ use beryllium::{
     init::InitFlags,
     video::{CreateWinArgs, GlContextFlags, GlProfile, GlWindow},
 };
+use beryllium::video::GlSwapInterval;
 use ogl33::{GL_ARRAY_BUFFER, GL_COMPILE_STATUS, GL_FALSE, GL_FLOAT, GL_FRAGMENT_SHADER, GL_STATIC_DRAW, GL_VERTEX_SHADER, glAttachShader, glBindBuffer, glBindVertexArray, glBufferData, glClearColor, glCompileShader, glCreateProgram, glCreateShader, glDeleteBuffers, glDeleteShader, glEnableVertexAttribArray, glGenBuffers, glGenVertexArrays, glGetShaderInfoLog, glGetShaderiv, glLinkProgram, glShaderSource, GLuint, glVertexAttribPointer, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
@@ -41,9 +42,11 @@ fn create_window(sdl: &Sdl) -> GlWindow {
         ..Default::default()
     };
 
-    sdl
+    let win = sdl
         .create_gl_window(win_args)
-        .expect("couldn't make a window and context")
+        .expect("couldn't make a window and context");
+    win.set_swap_interval(GlSwapInterval::Vsync).expect("Unable to set VSYNC!");
+    win
 }
 
 fn load_open_gl(win: &GlWindow) {
