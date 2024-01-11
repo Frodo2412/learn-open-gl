@@ -7,7 +7,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::load_gl_with;
+use ogl33::{glClearColor, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -43,6 +43,7 @@ fn create_window(sdl: &Sdl) -> GlWindow {
 fn load_open_gl(win: &GlWindow) {
     unsafe {
         load_gl_with(|f_name| win.get_proc_address(f_name.cast()));
+        glClearColor(0.2, 0.3, 0.3, 1.0);
     }
 }
 
