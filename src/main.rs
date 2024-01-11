@@ -14,7 +14,7 @@ const WINDOW_TITLE: &str = "Hello Window";
 
 type Vertex = [f32; 3];
 
-const VERTICES: [Vertex; 3] = [[-0.5, -0.5, 0.0], [0.5, -0.5, 0, 0], [0.0, 0.5, 0.0]];
+const VERTICES: [Vertex; 3] = [[-0.5, -0.5, 0.0], [0.5, -0.5, 0.0], [0.0, 0.5, 0.0]];
 
 fn setup_gl_context() -> Sdl {
     let sdl = Sdl::init(InitFlags::EVERYTHING);
