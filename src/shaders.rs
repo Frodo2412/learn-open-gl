@@ -43,7 +43,7 @@ impl Shader {
         }
     }
 
-    fn delete(self) {
+    pub(crate) fn delete(self) {
         unsafe { glDeleteShader(self.0) };
     }
 
