@@ -7,7 +7,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
-use ogl33::{glClearColor, glGenVertexArrays, GLuint, load_gl_with};
+use ogl33::{GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING, glBindBuffer, glClearColor, glGenBuffers, glGenVertexArrays, GLuint, load_gl_with};
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -47,11 +47,20 @@ fn load_open_gl(win: &GlWindow) {
     }
 }
 
-fn create_triangle_data() {
+fn generate_vertex_array_object() {
     unsafe {
         let mut vao = 0;
         glGenVertexArrays(1, &mut vao);
         assert_ne!(vao, 0);
+    }
+}
+
+fn generate_vertex_buffer_object() {
+    unsafe {
+        let mut vbo = 0;
+        glGenBuffers(1, &mut vbo);
+        assert_ne!(vbo, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
     }
 }
 
