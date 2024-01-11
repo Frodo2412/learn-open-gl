@@ -7,6 +7,7 @@ use beryllium::{
     *,
 };
 use beryllium::video::GlWindow;
+use ogl33::load_gl_with;
 
 const WINDOW_TITLE: &str = "Hello Window";
 
@@ -39,9 +40,17 @@ fn create_window(sdl: &Sdl) -> GlWindow {
         .expect("couldn't make a window and context")
 }
 
+fn load_open_gl(win: &GlWindow) {
+    unsafe {
+        load_gl_with(|f_name| win.get_proc_address(f_name.cast()));
+    }
+}
+
 fn main() {
     let sdl = setup_gl_context();
-    let _win = create_window(&sdl);
+    let win = create_window(&sdl);
+
+    load_open_gl(&win);
 
     'main_loop: loop {
         while let Some((event, _timestamp)) = sdl.poll_events() {
