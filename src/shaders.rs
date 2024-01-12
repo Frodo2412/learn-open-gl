@@ -25,7 +25,7 @@ impl Shader {
         }
     }
 
-    fn set_source(self, src: &str) {
+    fn set_source(&self, src: &str) {
         unsafe {
             glShaderSource(
                 self.0,
@@ -37,7 +37,7 @@ impl Shader {
     }
 
 
-    fn compile(self) {
+    fn compile(&self) {
         unsafe {
             glCompileShader(self.0);
         }
